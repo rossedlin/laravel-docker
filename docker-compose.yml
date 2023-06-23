@@ -1,0 +1,34 @@
+version: '3.3'
+
+services:
+  web:
+    image: rossedlin/php-apache:8.2
+    container_name: web
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    volumes:
+      - ./:/var/www
+  db:
+    image: 'mysql/mysql-server:8.0'
+    container_name: db
+    ports:
+      - '3306:3306'
+    env_file:
+      - .env
+    volumes:
+      - 'database:/var/lib/mysql'
+
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-p${MYSQL_PASSWORD}'
+      retries: 3
+      timeout: 5s
+
+
+volumes:
+  database:
